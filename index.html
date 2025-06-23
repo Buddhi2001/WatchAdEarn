@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Click4Points - Earn by Viewing Ads</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background-color: #121212; color: #fff; text-align: center; }
+    header { background-color: #1f1f1f; padding: 20px; font-size: 1.8em; }
+    .container { padding: 20px; }
+    .ad-box { background: #2a2a2a; padding: 20px; margin: 20px auto; border-radius: 10px; max-width: 400px; }
+    button { padding: 10px 20px; font-size: 1em; border: none; background: #03dac6; color: #000; border-radius: 5px; cursor: pointer; }
+    button:disabled { background: #555; cursor: not-allowed; }
+    #points { font-size: 2em; color: #03dac6; margin-top: 10px; }
+    input { padding: 10px; border-radius: 5px; border: none; width: 100%; margin-top: 10px; }
+    a { color: #03a9f4; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>🎯 Click4Points</header>
+  <div class="container">
+    <p>Earn 5 points per ad view. Withdraw at 500,000 points!</p>
+
+    <div class="ad-box">
+      <p>🔰 Click the button below, view both ads for 15 seconds, then unlock the reward!</p>
+      <button onclick="openAds()" id="viewAdBtn">▶️ View Ads</button>
+      <br><br>
+      <button id="watchBtn" onclick="addPoints()" disabled>I Watched the Ads</button>
+      <p id="timerMsg" style="margin-top: 10px;"></p>
+    </div>
+
+    <div>
+      <p>Your Points:</p>
+      <div id="points">0</div>
+      <br>
+      <input type="text" id="wallet" placeholder="Enter your TRC20 USDT Wallet Address">
+      <br><br>
+      <button id="withdrawBtn" onclick="withdraw()" disabled>Withdraw</button>
+      <p id="withdrawAmount" style="margin-top: 10px;"></p>
+    </div>
+
+    <div style="background-color: #1e1e1e; padding: 20px; border-radius: 10px; text-align: left; max-width: 600px; margin: 40px auto; font-size: 0.95em;">
+      <h3 style="color: #03dac6;">📜 Community Guidelines</h3>
+      <ul>
+        <li>Please watch each advertisement fully and stay on the ad page for at least 15 seconds.</li>
+        <li>Do not refresh or try to cheat the system — we monitor all activity to ensure fairness.</li>
+        <li>Only click the "I Watched the Ads" button after genuinely viewing the ads.</li>
+        <li>Failure to follow these rules may result in disqualification or loss of points.</li>
+        <li>If you view ads correctly, you will have no issues when requesting withdrawals.</li>
+      </ul>
+    </div>
+
+    <div style="background-color: #1e1e1e; padding: 20px; border-radius: 10px; text-align: left; max-width: 600px; margin: 0 auto 40px; font-size: 0.95em;">
+      <h3 style="color: #03dac6;">📬 Contact Us</h3>
+      <p>If you have any questions, feel free to contact us:</p>
+      <p><strong>Email:</strong> <a href="mailto:bdasanayaka964@gmail.com">bdasanayaka964@gmail.com</a></p>
+    </div>
+  </div>
+
+  <script>
+    emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS user ID
+
+    let points = 0;
+
+    function openAds() {
+      window.open("https://otieu.com/4/9479758", "_blank");
+      window.open("https://otieu.com/4/9432612", "_blank");
+
+      const watchBtn = document.getElementById('watchBtn');
+      const timerMsg = document.getElementById('timerMsg');
+      watchBtn.disabled = true;
+      let countdown = 15;
+      timerMsg.textContent = `Please wait ${countdown} seconds before you can claim points.`;
+
+      const timer = setInterval(() => {
+        countdown--;
+        if(countdown > 0) {
+          timerMsg.textContent = `Please wait ${countdown} seconds before you can claim points.`;
+        } else {
+          clearInterval(timer);
+          timerMsg.textContent = 'You can now click "I Watched the Ads" button.';
+          watchBtn.disabled = false;
+        }
+      }, 1000);
+    }
+
+    function addPoints() {
+      points += 5;
+      document.getElementById("points").innerText = points;
+      document.getElementById("timerMsg").textContent = '';
+      document.getElementById("watchBtn").disabled = true;
+
+      const withdrawBtn = document.getElementById("withdrawBtn");
+      const withdrawAmount = document.getElementById("withdrawAmount");
+      if (points >= 500000) {
+        withdrawBtn.disabled = false;
+      }
+      const dollars = Math.floor(points / 100000);
+      withdrawAmount.textContent = `You can withdraw: $${dollars}`;
+    }
+
+    function withdraw() {
+      const wallet = document.getElementById("wallet").value.trim();
+      const dollars = Math.floor(points / 100000);
+
+      if (!wallet) {
+        alert("⚠️ Please enter your TRC20 USDT wallet address.");
+        return;
+      }
+      if (dollars < 5) {
+        alert("⚠️ Minimum withdraw is $5 (500,000 points).");
+        return;
+      }
+
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        wallet_address: wallet,
+        withdraw_amount: `$${dollars}`,
+      }).then(function(response) {
+        alert("🎉 Withdrawal request sent successfully!");
+        points = 0;
+        document.getElementById("points").innerText = points;
+        document.getElementById("withdrawBtn").disabled = true;
+        document.getElementById("withdrawAmount").textContent = '';
+        document.getElementById("wallet").value = '';
+      }, function(error) {
+        alert("❌ Failed to send request. Try again later.");
+      });
+    }
+  </script>
+</body>
+</html>
